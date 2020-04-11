@@ -1,15 +1,120 @@
-<style>
-    input:invalid {
-        border: 2px solid red;
-    }   
-    
-    
-    ul{width:25%}
-    li {display: flex; flex-direction: row;}
-    .taskName{}
-    .taskTime{margin-left: auto;}
-    .delete{margin-left:auto;}
-</style>
+<!DOCTYPE html>
+<html>
+    <head>   
+    <style>
+        input:invalid {
+            border: 2px solid red;
+        }   
+        ul{width:25%}
+        li {display: flex; flex-direction: row;}
+        .taskName{}
+        .taskTime{margin-left: auto;}
+        .delete{margin-left:auto;}
+    </style>
+    <script>   
+        document.getElementById("status").innerHTML = calculate(16); 
+
+        var button = document.getElementById("addTask");    
+        button.onclick = function () {
+            var task = document.getElementById("task");
+            var time = document.getElementById("time");       
+
+            if (task.value == '' | time.value == ''){
+                return;
+            }
+            if(!/^(\d+h)?(\d+m)?$/.test(time.value.toLowerCase())){
+                var time = document.getElementById('time');
+
+            }
+
+            var list = document.getElementById("list");
+
+
+            var taskNode = document.createElement("DIV");
+            taskNode.setAttribute("class", "taskName");
+            taskNode.textContent = task.value;
+
+            var timeNode = document.createElement("DIV")
+            timeNode.setAttribute("class", "taskTime");
+            timeNode.textContent = time.value.toLowerCase();
+
+            var deleteButton = document.createElement("button")
+            deleteButton.textContent = "Delete";
+            deleteButton.setAttribute("class", "delete");
+            deleteButton.onclick = function(){
+                this.parentElement.remove();
+                document.getElementById("status").innerHTML = calculate(16); 
+            };
+
+            var li = document.createElement("LI");
+            li.setAttribute("class","taskNode")
+            li.appendChild(taskNode);
+            li.appendChild(timeNode);
+            li.appendChild(deleteButton);        
+
+            list.appendChild(li);
+            document.getElementById("status").innerHTML = calculate(16);        
+
+            task.value = '';
+            time.value = '';
+
+        };
+        function calculate(wakeTime){
+            var timeList = document.querySelectorAll(".taskTime");
+            var total_hours = 0;
+            var total_minutes = 0;
+            timeList.forEach(function(item){         
+                var match = item.innerHTML.toLowerCase().match(/^(\d+h)?(\d+m)?$/);	            
+                if (match[1]){
+                    total_hours += match[1].split('h')[0] * 1;                
+                }	
+                if (match[2])
+                {
+                    total_minutes += match[2].split('m')[0] * 1;             
+                }             
+            });  
+            var status = "You shouldn't be seeing this.";       
+            var minute_hours = Math.floor(total_minutes/60);        
+            var remaining_minutes = total_minutes % 60;       
+            if (total_hours + minute_hours < wakeTime)
+            {
+                var hours = wakeTime - total_hours + minute_hours - 1;            
+                var minutes = 60 - remaining_minutes;
+                if(remaining_minutes == 0){
+                    hours +=1;
+                    minutes = 0;
+                }
+                if(hours > 0 & minutes == 0){
+                    status = `You are currently short ${hours} hours.` 
+                }
+                else if(hours > 0 & minutes > 0){
+                    status = `You are currently short ${hours} hours and ${minutes} minutes.` 
+                }
+                else{
+                    status = `You are currently short ${minutes} minutes.`
+                }            
+            }
+            else if (total_hours + minute_hours > wakeTime | (total_hours + minute_hours >= wakeTime & remaining_minutes > 0))
+            {
+                var hours = total_hours + minute_hours - wakeTime;          
+                var minutes = remaining_minutes;
+                if(hours > 0 & minutes == 0){
+                    status = `You are currently over ${hours} hours.` 
+                }
+                else if(hours > 0 & minutes > 0){
+                    status = `You are currently over ${hours} hours and ${minutes} minutes.` 
+                }
+                else{
+                    status = `You are currently over ${minutes} minutes.`
+                }            
+            }
+            else{
+                status = 'Your schedule is complete.'
+            }
+            return status;
+        };
+    </script>
+</head>
 
 <body>
     <form>
@@ -20,110 +125,4 @@
     <div id="status"></div>
     <ul id="list"></ul> 
 </body>
-
-<script>   
-    document.getElementById("status").innerHTML = calculate(16); 
-    
-    var button = document.getElementById("addTask");    
-    button.onclick = function () {
-        var task = document.getElementById("task");
-        var time = document.getElementById("time");       
-        
-        if (task.value == '' | time.value == ''){
-            return;
-        }
-        if(!/^(\d+h)?(\d+m)?$/.test(time.value.toLowerCase())){
-            var time = document.getElementById('time');
-            
-        }
-
-        var list = document.getElementById("list");
-        
-        
-        var taskNode = document.createElement("DIV");
-        taskNode.setAttribute("class", "taskName");
-        taskNode.textContent = task.value;
-        
-        var timeNode = document.createElement("DIV")
-        timeNode.setAttribute("class", "taskTime");
-        timeNode.textContent = time.value.toLowerCase();
-        
-        var deleteButton = document.createElement("button")
-        deleteButton.textContent = "Delete";
-        deleteButton.setAttribute("class", "delete");
-        deleteButton.onclick = function(){
-            this.parentElement.remove();
-            document.getElementById("status").innerHTML = calculate(16); 
-        };
-        
-        var li = document.createElement("LI");
-        li.setAttribute("class","taskNode")
-        li.appendChild(taskNode);
-        li.appendChild(timeNode);
-        li.appendChild(deleteButton);        
-        
-        list.appendChild(li);
-        document.getElementById("status").innerHTML = calculate(16);        
-        
-        task.value = '';
-        time.value = '';
-
-    };
-    function calculate(wakeTime){
-        var timeList = document.querySelectorAll(".taskTime");
-        var total_hours = 0;
-        var total_minutes = 0;
-        timeList.forEach(function(item){         
-            var match = item.innerHTML.toLowerCase().match(/^(\d+h)?(\d+m)?$/);	            
-            if (match[1]){
-                total_hours += match[1].split('h')[0] * 1;                
-            }	
-            if (match[2])
-            {
-                total_minutes += match[2].split('m')[0] * 1;             
-            }             
-        });  
-        var status = "You shouldn't be seeing this.";       
-        var minute_hours = Math.floor(total_minutes/60);        
-        var remaining_minutes = total_minutes % 60;       
-        if (total_hours + minute_hours < wakeTime)
-        {
-            var hours = wakeTime - total_hours + minute_hours - 1;            
-            var minutes = 60 - remaining_minutes;
-            if(remaining_minutes == 0){
-                hours +=1;
-                minutes = 0;
-            }
-            if(hours > 0 & minutes == 0){
-                status = `You are currently short ${hours} hours.` 
-            }
-            else if(hours > 0 & minutes > 0){
-                status = `You are currently short ${hours} hours and ${minutes} minutes.` 
-            }
-            else{
-                status = `You are currently short ${minutes} minutes.`
-            }            
-        }
-        else if (total_hours + minute_hours > wakeTime | (total_hours + minute_hours >= wakeTime & remaining_minutes > 0))
-        {
-            var hours = total_hours + minute_hours - wakeTime;          
-            var minutes = remaining_minutes;
-            if(hours > 0 & minutes == 0){
-                status = `You are currently over ${hours} hours.` 
-            }
-            else if(hours > 0 & minutes > 0){
-                status = `You are currently over ${hours} hours and ${minutes} minutes.` 
-            }
-            else{
-                status = `You are currently over ${minutes} minutes.`
-            }            
-        }
-        else{
-            status = 'Your schedule is complete.'
-        }
-        return status;
-    };
-</script>
-
-
-
+</html>

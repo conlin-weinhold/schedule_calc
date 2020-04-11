@@ -10,7 +10,17 @@
         .taskName{}
         .taskTime{margin-left: auto;}
         .delete{margin-left:auto;}
-    </style>
+    </style>    
+</head>
+
+<body>
+    <form>
+        <input id="task" type="text" placeholder="Task name">
+        <input id="time" type="text" placeholder="Task time in 0h00m format" pattern="(\d{1,2}h)?(\d{1,2}m)?">
+    </form>
+    <button id="addTask">Add Task</button>
+    <div id="status"></div>
+    <ul id="list"></ul> 
     <script>   
         document.getElementById("status").innerHTML = calculate(16); 
 
@@ -114,15 +124,5 @@
             return status;
         };
     </script>
-</head>
-
-<body>
-    <form>
-        <input id="task" type="text" placeholder="Task name">
-        <input id="time" type="text" placeholder="Task time in 0h00m format" pattern="(\d{1,2}h)?(\d{1,2}m)?">
-    </form>
-    <button id="addTask">Add Task</button>
-    <div id="status"></div>
-    <ul id="list"></ul> 
 </body>
 </html>
